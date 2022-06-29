@@ -3,8 +3,15 @@ uuid = "021381c1-d00a-4861-ba2b-4d077ab1b5cd"
 authors = ["Peter Simon"]
 version = "0.1.0"
 
+[deps]
+DefaultApplication = "3f0dd361-4fe0-5fc6-8523-80b14ec94d85"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+
 [compat]
 julia = "1"
+DefaultApplication = "1.1"
+
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
