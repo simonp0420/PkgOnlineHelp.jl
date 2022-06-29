@@ -11,9 +11,9 @@ import DefaultApplication
 
 docstr = 
 """
-    url = package_site(pkgname::AbstractString, autoopen=true)
+    url = package_site(pkgname::AbstractString; autoopen=true)
 
-    url = pkg_site(pkgname::AbstractString, autoopen=true)
+    url = pkg_site(pkgname::AbstractString; autoopen=true)
 
 
 Attempt to find the URL of a package's home repository, by searching through the 

@@ -4,9 +4,9 @@
 
 A small package to help users navigate to Julia package home repositories. The two (identical) functions exported by this package are `pkg_site` and `package_site`.
 
-    `url = package_site(pkgname::AbstractString, autoopen=true)`
+    `url = package_site(pkgname::AbstractString; autoopen=true)`
 
-    `url = pkg_site(pkgname::AbstractString, autoopen=true)`
+    `url = pkg_site(pkgname::AbstractString; autoopen=true)`
 
 
 Attempt to find the URL of a package's home repository, by searching through the registries in `DEPOT_PATH`.  If `autoopen` is `true` (default), then open the URL using the default browser.
