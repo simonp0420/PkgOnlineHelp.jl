@@ -1,7 +1,7 @@
 """
 A package to help users navigate to Julia package home repositories and documentation
 sites. See help for exported functions `pkg_site`, `add_pkg_docs`, `remove_pkg_docs`, 
-`list_pkg_docs`, `pkg_doc_site`, and the convenience macro `@docs`.
+`list_pkg_docs`, `pkg_docs_site`, and the convenience macro `@docs`.
 """
 module PkgOnlineHelp
 
@@ -31,7 +31,8 @@ function pkg_site(pkgname::AbstractString; autoopen = true)
     for depot in DEPOT_PATH
         isdir(joinpath(depot, "registries")) || continue
         for r in readdir(joinpath(depot, "registries"))
-            file = joinpath(depot, "registries", r, pkgname[1:1], pkgname, "Package.toml")
+            file = joinpath(depot, "registries", r, uppercase(pkgname[1:1]), 
+            pkgname, "Package.toml")
             !isfile(file) && continue
             repoline = readlines(file)[3]
             url = TOML.parse(repoline)["repo"]
@@ -39,7 +40,6 @@ function pkg_site(pkgname::AbstractString; autoopen = true)
             return url
         end
     end
-    println("Package $pkgname not found in available registries")
     return nothing
 end
 
@@ -97,9 +97,9 @@ function remove_pkg_docs(package::AbstractString)
 end
 
 """
-    list_pkg_docs(package::AbstractString)
+    list_pkg_docs(io::IO=stdout)
 
-Remove an entry for a package's documentation web site from the local database.
+Print out the documentation sites stored in the `PkgOnlineHelp` database to IO stream `io`.
 """
 function list_pkg_docs(io::IO=stdout)
     pkgdict, tomlfile = _get_pkgdict()
@@ -108,7 +108,7 @@ function list_pkg_docs(io::IO=stdout)
 end
 
 """
-    url = pkg_docs_site(package::String, autoopen=true)
+    url = pkg_docs_site(package::String; autoopen=true)
 
 Attempt to find the URL of a package's documentation site by searching 
 through the local database established by previous calls to `add_pkg_docs`.
@@ -133,14 +133,14 @@ julia> pkg_docs_site("PSSFSS")
 
 In addition, the site is opened in the user's default browser.
 """
-function pkg_docs_site(package::String, autoopen=true)
+function pkg_docs_site(package::String; autoopen=true)
     pkgdict, _ = _get_pkgdict()
     if haskey(pkgdict, package)
         url = pkgdict[package]
     else
-        url = pkg_site(package, autoopen=false)
+        url = pkg_site(package; autoopen=false)
     end
-    autoopen && DefaultApplication.open(url)
+    autoopen && !isnothing(url) && DefaultApplication.open(url)
     return url
 end
 
@@ -151,22 +151,39 @@ Retrieve the URL of the package's documentation site if previously recorded via 
 `add_pkg_docs` or to the package's repository otherwise.  Open the URL in the user's 
 default browser.
 
-# Example
+# Examples
+
 ```
 julia> using PkgOnlineHelp
 
 julia> @docs StaticArrays
 "https://github.com/JuliaArrays/StaticArrays.jl.git"
+```
 
 The `StaticArrays` repo site is returned and opened in the browser.  In this example
 the user had not previously entered the actual documentation site via a prior call
-to `add_pkg_docs`. 
+to `add_pkg_docs`. The repo site was found by searching through all Julia registries
+in `DEPOT_PATH`. 
+
+`@docs` can also be used to access unregistered packages or even arbitrary web sites.
+Suppose you wish to have rapid access to the portion of the Julia documentation discussing
+macros.  Then you would (one time only) enter the following at the Julia prompt:
+```julia
+julia> add_pkg_docs("macros", "https://docs.julialang.org/en/v1/manual/metaprogramming/#man-macros")
+```
+Later in this Julia session, or in any future session, the site can be quickly opened by entering
+```julia
+julia> @docs macros
+```
+Of course, this example assumes that `using PkgOnlineHelp` has already been entered.  
+For convenience, you may wish to include this statement in your `startup.jl` file.
+
 
 # See Also
 `add_pkg_docs`, `remove_pkg_docs`, `list_pkg_docs`, `pkg_site`
 """
 macro docs(package)
-    :(pkg_docs_site($(string(package))))
+    esc(:(pkg_docs_site($(string(package)))))
 end
 
 end
