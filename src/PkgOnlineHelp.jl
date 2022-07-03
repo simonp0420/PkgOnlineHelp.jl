@@ -103,7 +103,7 @@ Print out the documentation sites stored in the `PkgOnlineHelp` database to IO s
 """
 function list_pkg_docs(io::IO=stdout)
     pkgdict, tomlfile = _get_pkgdict()
-    TOML.print(io, pkgdict)
+    TOML.print(io, pkgdict, sorted=true, by=x->lowercase(x[1]))
     return nothing
 end
 
