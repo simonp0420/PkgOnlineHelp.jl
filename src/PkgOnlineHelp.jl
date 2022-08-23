@@ -33,9 +33,20 @@ function pkg_site(pkgname::AbstractString; autoopen = true)
         for r in readdir(joinpath(depot, "registries"))
             file = joinpath(depot, "registries", r, uppercase(pkgname[1:1]), 
             pkgname, "Package.toml")
-            !isfile(file) && continue
-            repoline = readlines(file)[3]
-            url = TOML.parse(repoline)["repo"]
+            filegz = joinpath(depot, "registries", "General.tar.gz")
+            if isfile(file)
+                repoline = readlines(file)[3]
+                url = get(TOML.parse(repoline), "repo", "")
+            elseif isfile(filegz)
+                regdata = Pkg.Registry.uncompress_registry(filegz)
+                key = uppercase(pkgname[1:1]) * "/" * pkgname * "/" * "Package.toml"
+                pkgtoml = get(regdata, key, "")
+                isempty(pkgtoml) && continue
+                url = get(TOML.parse(pkgtoml), "repo", "")
+            else
+                continue
+            end
+            isempty(url) && continue
             autoopen && DefaultApplication.open(url)
             return url
         end
