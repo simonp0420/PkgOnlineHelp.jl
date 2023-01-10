@@ -136,11 +136,12 @@ julia> using PkgOnlineHelp
 julia> add_pkg_docs("PSSFSS", "https://simonp0420.github.io/PSSFSS.jl/stable/")
 ```
 Then in the same or a later Julia session:
-```julia
+```
 julia> using PkgOnlineHelp
 
 julia> pkg_docs_site("PSSFSS")
 "https://simonp0420.github.io/PSSFSS.jl/stable/"
+```
 
 In addition, the site is opened in the user's default browser.
 """
