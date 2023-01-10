@@ -1,7 +1,7 @@
 name = "PkgOnlineHelp"
 uuid = "021381c1-d00a-4861-ba2b-4d077ab1b5cd"
 authors = ["Peter Simon"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 DefaultApplication = "3f0dd361-4fe0-5fc6-8523-80b14ec94d85"
